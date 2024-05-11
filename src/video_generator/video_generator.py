@@ -57,12 +57,26 @@ class VideoGeneratorConfig:
         self.bpm = bpm
         self.fps = fps
         self.speed = speed
+
+        # colors
+        # keys
         self.white_note_color = white_note_color
         self.black_note_color = black_note_color
+
         self.background_color = background_color
         self.octave_lines_color = octave_lines_color
+
+        # falling notes
+        # standrad notes
         self.note_color = note_color
         self.dark_note_color = dark_note_color
+
+        # right and left hand
+        self.right_note_color = (255, 0, 0)
+        self.left_note_color = (0, 0, 255)
+        self.dark_right_note_color = (127, 0, 0)
+        self.dark_left_note_color = (0, 0, 127)
+
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.note_animation = NoteAnimation(
@@ -213,10 +227,18 @@ class VideoGenerator:
         if "#" in note.key:
             width = self.piano.black_key_width
             color = self.config.dark_note_color
+            if note_event.hand == "right":
+                color = self.config.dark_right_note_color
+            if note_event.hand == "left":
+                color = self.config.dark_left_note_color
             note_padding = 0
         else:
             width = self.piano.white_key_width - note_padding * 2
             color = self.config.note_color
+            if note_event.hand == "right":
+                color = self.config.right_note_color
+            if note_event.hand == "left":
+                color = self.config.left_note_color
 
         # logging.info(f"note {note} is active")
         note_position = round(
