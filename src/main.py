@@ -28,9 +28,9 @@ def read_events(events_path: Path) -> list[NoteEvent]:
             note=event["note"],
             velocity=event["velocity"],
             start=event["start"],
+            end=event["end"],
             hand=event["hand"],
         )
-        e.set_end(event["end"])
         events.append(e)
     return events
 

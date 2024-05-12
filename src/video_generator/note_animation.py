@@ -37,6 +37,7 @@ class NoteAnimation:
         last_event = max(events, key=lambda x: x.end)
         # Calculate the total number of ticks needed to render all notes
         total_ticks = last_event.end
+        print(total_ticks)
         # Calculate the total number of frames needed to render all notes
         return int(total_ticks / self.ticks_per_frame) + 3 * self.fps
 

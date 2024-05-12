@@ -20,10 +20,12 @@ class CustomMessage:
 
 
 class NoteEvent(CustomMessage):
-    def __init__(self, note, velocity, start, hand=None):
+    def __init__(self, note, velocity, start, end=None, hand=None):
         super().__init__(start)
         self.note = note
         self.velocity = velocity
+        self.end = end
+        self.hand = hand
 
     def get_start(self):
         return NoteEvent(self.note, self.velocity, self.start)
