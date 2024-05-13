@@ -51,14 +51,14 @@ class VideoGeneratorConfig:
         self.octave_lines_color = octave_lines_color
 
         # falling notes standrad notes
-        self.note_color = note_color
-        self.dark_note_color = dark_note_color
+        self.note_color = (179, 44, 49)
+        self.dark_note_color = (113, 34, 36)
 
         # right and left hand
-        self.right_note_color = (255, 0, 0)
-        self.left_note_color = (0, 0, 255)
-        self.dark_right_note_color = (127, 0, 0)
-        self.dark_left_note_color = (0, 0, 127)
+        self.right_note_color = (168, 255, 145)
+        self.left_note_color = (176, 202, 229)
+        self.dark_right_note_color = (118, 208, 68)
+        self.dark_left_note_color = (124, 142, 151)
 
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -175,11 +175,13 @@ class VideoGenerator:
             color = self.config.white_note_color
             note_event = self.active_notes[midi_note_id]
             if note_event:
-                color = self.config.dark_note_color
                 if note_event.hand == "right":
                     color = self.config.right_note_color
-                if note_event.hand == "left":
+                elif note_event.hand == "left":
                     color = self.config.left_note_color
+                else:
+                    # if hand is not set, it means it's a note that is played by both hands
+                    color = self.config.note_color
             rect = pygame.Rect(left_pos, top, white_key_width, white_key_height)
             pygame.draw.rect(screen, color, rect, border_radius=3)
             pygame.draw.rect(screen, (0, 0, 0), rect, 1, border_radius=3)
@@ -192,11 +194,13 @@ class VideoGenerator:
             color = self.config.black_note_color
             note_event = self.active_notes[midi_note_id]
             if note_event:
-                color = self.config.dark_note_color
                 if note_event.hand == "right":
                     color = self.config.dark_right_note_color
-                if note_event.hand == "left":
+                elif note_event.hand == "left":
                     color = self.config.dark_left_note_color
+                else:
+                    color = self.config.dark_note_color
+
             left = self.piano.get_left_key_pos(note, white_key_width, black_key_width)
             rect = pygame.Rect(left, top, black_key_width, black_key_height)
             pygame.draw.rect(screen, color, rect, border_radius=3)
@@ -222,19 +226,21 @@ class VideoGenerator:
 
         if "#" in note.key:
             width = self.piano.black_key_width
-            color = self.config.dark_note_color
             if note_event.hand == "right":
                 color = self.config.dark_right_note_color
-            if note_event.hand == "left":
+            elif note_event.hand == "left":
                 color = self.config.dark_left_note_color
+            else:
+                color = self.config.dark_note_color
             note_padding = 0
         else:
             width = self.piano.white_key_width - note_padding * 2
-            color = self.config.note_color
             if note_event.hand == "right":
                 color = self.config.right_note_color
-            if note_event.hand == "left":
+            elif note_event.hand == "left":
                 color = self.config.left_note_color
+            else:
+                color = self.config.note_color
 
         # logging.info(f"note {note} is active")
         note_position = round(
