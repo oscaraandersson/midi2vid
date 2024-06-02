@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Dict
 import os
 import pygame
-from tqdm import tqdm
+from multiprocessing import Pool
 
 from pathlib import Path
 from src.utils import NoteEvent
@@ -272,54 +272,59 @@ class VideoGenerator:
                 border_radius=3,
             )
 
-    def _generate_frames2(self, events: list[NoteEvent]):
+    def _generate_frame(self, events: list[NoteEvent], frame_id, screen) -> None:
+        # reset active notes
+        self.active_notes = {note: None for note in self.piano.midi_key_range}
+        screen.fill(self.config.background_color)
+        # select the events that are in the current frame
+        active_events: list[NoteEvent] = (
+            self.config.note_animation.get_active_note_events(
+                note_events=events,
+                current_frame=frame_id,
+                screen_height=self.config.screen_height,
+                piano_height=int(self.piano.white_key_height),
+            )
+        )
+        # draw the notes that are in the current frame
+        for note_event in active_events:  # draw all the notes that will hit a white key
+            if "#" not in self.piano.get_note(note_event.note).key:
+                self._draw_note(note_event, frame_id, screen)
+        for note_event in active_events:  # draw all the notes that will hit a black key
+            if "#" in self.piano.get_note(note_event.note).key:
+                self._draw_note(note_event, frame_id, screen)
+        self._draw_piano(screen)
+        self._save_frame(path=self.framedir, screen=screen, frame_number=frame_id)
+
+    def _generate_frame_range(self, events: list[NoteEvent], start_frame, end_frame):
+        screen = pygame.Surface((self.config.screen_width, self.config.screen_height))
+        for frame_id in range(start_frame, end_frame):
+            self._generate_frame(events, frame_id, screen)
+
+    def _generate_frames(self, events: list[NoteEvent]):
         """Use a different approach to generate frames. This approach should be parallelized
         all noteposistions should be determined by the frame number
         """
-        screen = pygame.Surface((self.config.screen_width, self.config.screen_height))
-        pygame.init()
-
         total_frames = self.config.note_animation.get_total_number_of_frames(events)
+        logging.info(f"Total frames: {total_frames}")
+        # use multiprocessing to generate frames
 
-        for frame_id in tqdm(
-            range(total_frames),
-            desc="Generating frames",
-            unit="frame",
-            total=total_frames,
-        ):
-            # reset active notes
-            self.active_notes = {note: None for note in self.piano.midi_key_range}
-            screen.fill(self.config.background_color)
-            # select the events that are in the current frame
-            active_events: list[NoteEvent] = (
-                self.config.note_animation.get_active_note_events(
-                    note_events=events,
-                    current_frame=frame_id,
-                    screen_height=self.config.screen_height,
-                    piano_height=int(self.piano.white_key_height),
-                )
+        n_processes = 4
+        frames_per_process = total_frames // n_processes
+        with Pool(n_processes) as p:
+            p.starmap(
+                self._generate_frame_range,
+                [
+                    (events, i * frames_per_process, (i + 1) * frames_per_process)
+                    for i in range(n_processes)
+                ],
             )
-            # draw the notes that are in the current frame
-            for (
-                note_event
-            ) in active_events:  # draw all the notes that will hit a white key
-                if "#" not in self.piano.get_note(note_event.note).key:
-                    self._draw_note(note_event, frame_id, screen)
-            for (
-                note_event
-            ) in active_events:  # draw all the notes that will hit a black key
-                if "#" in self.piano.get_note(note_event.note).key:
-                    self._draw_note(note_event, frame_id, screen)
-
-            self._draw_piano(screen)
-            self._save_frame(path=self.framedir, screen=screen, frame_number=frame_id)
 
     @log_performance
     def generate_video(
         self, events: list[NoteEvent], destination_filepath: Path, sample=False
     ):
         logging.info("Generating frames")
-        self._generate_frames2(events)
+        self._generate_frames(events)
         logging.info("Rendering video")
         self._render_frames()
         logging.info("Rendering audio")

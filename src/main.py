@@ -20,6 +20,7 @@ def read_events(events_path: Path) -> list[NoteEvent]:
         {note: int, velocity: int, start: int, end: int, hand: str},
     ]
     """
+    print(events_path)
     with open(events_path, "r") as f:
         events_raw = json.load(f)
     events = []
@@ -67,8 +68,10 @@ def convert_video(source_path: Path, video_path: Path, events_path: Path | None 
     events = []
     if events_path:
         events = read_events(events_path)
+        print(len(events))
     else:
         events = preprocessor.get_midi_events(source_path)
+        print(len(events))
     video_generator.generate_video(events=events, destination_filepath=video_path)
 
 
