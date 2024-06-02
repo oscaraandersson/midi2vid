@@ -252,16 +252,14 @@ class VideoGenerator:
         """
         total_frames = self.note_animation_model.get_total_number_of_frames(events)
         logging.info(f"Total frames: {total_frames}")
-        # use multiprocessing to generate frames
-
-        n_processes = 4
-        frames_per_process = total_frames // n_processes
-        with Pool(n_processes) as p:
+        n_processors = self.config["n_processors"]
+        frames_per_process = total_frames // n_processors
+        with Pool(n_processors) as p:
             p.starmap(
                 self._generate_frame_range,
                 [
                     (events, i * frames_per_process, (i + 1) * frames_per_process)
-                    for i in range(n_processes)
+                    for i in range(n_processors)
                 ],
             )
 

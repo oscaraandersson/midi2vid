@@ -1,13 +1,10 @@
 .DS_Store
 __pycache__/
-audio.wav
 data/
 midi_player.egg-info/
-oceans_away.mid
-oceans_away.mp4
 pyrightconfig.json
 resources/
 venv/
-video-no-sound.mp4
 workdir/
 test/generated
+*.mp4

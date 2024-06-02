@@ -40,12 +40,12 @@ class MidiPreprocessor:
             self._preprocess_track(track)
         self.events = sorted(self.events, key=lambda x: x.start)
 
-    def _trim_long_notes(self, max_duration: int):
-        """Trim notes that are longer than max_duration
-        max_duration: the maximum duration of a note in ticks
+    def _trim_long_notes(self, max_note_length: int):
+        """Trim notes that are longer than max_note_length
+        max_note_length: the maximum duration of a note in ticks
         """
         for i in range(len(self.events)):
-            self.events[i].trim_note(max_duration)
+            self.events[i].trim_note(max_note_length)
 
     def _fix_sequential_notes(self):
         def _init_node():
@@ -60,9 +60,9 @@ class MidiPreprocessor:
                 previous_note_map[current_note.note].end = current_note.start - 50
             previous_note_map[current_note.note] = current_note
 
-    def get_midi_events(self, midi_path: Path) -> list[NoteEvent]:
+    def get_midi_events(self, midi_path: Path, max_note_length: int) -> list[NoteEvent]:
         self._extract_midi_objects(midi_path)
-        self._trim_long_notes(max_duration=500)
+        self._trim_long_notes(max_note_length=max_note_length)
         self._fix_sequential_notes()
         return self.events
 

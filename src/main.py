@@ -32,9 +32,7 @@ def read_events(events_path: Path) -> list[NoteEvent]:
 def main(config, source_path: Path, video_path: Path, events_path: Path | None = None):
     preprocessor = MidiPreprocessor()
     video_generator = VideoGenerator(
-        workdir=Path("workdir"),
-        midi_file_path=source_path,
-        config=config,
+        workdir=Path("workdir"), midi_file_path=source_path, config=config
     )
 
     events = []
@@ -42,7 +40,9 @@ def main(config, source_path: Path, video_path: Path, events_path: Path | None =
         events = read_events(events_path)
         print(len(events))
     else:
-        events = preprocessor.get_midi_events(source_path)
+        events = preprocessor.get_midi_events(
+            source_path, max_note_length=config["max_note_length"]
+        )
         print(len(events))
     video_generator.generate_video(events=events, destination_filepath=video_path)
 
