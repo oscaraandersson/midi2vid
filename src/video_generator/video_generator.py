@@ -10,65 +10,14 @@ from src.utils import NoteEvent
 import logging
 import time
 from functools import wraps
-from src.config import Config
 from src.video_generator.piano import Piano, Note
-from src.video_generator.note_animation import NoteAnimation
-
-
-config = Config()
+from src.video_generator.note_animation import NoteAnimationModel
+from mido import MidiFile
 
 # Set up logging configuration
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
-
-class VideoGeneratorConfig:
-    def __init__(
-        self,
-        bpm,
-        fps,
-        speed,
-        ticks_per_beat,
-        white_note_color,
-        black_note_color,
-        background_color,
-        octave_lines_color,
-        note_color,
-        dark_note_color,
-        screen_width,
-        screen_height,
-    ):
-        self.bpm = bpm
-        self.fps = fps
-        self.speed = speed
-
-        # colors keys
-        self.white_note_color = white_note_color
-        self.black_note_color = black_note_color
-
-        self.background_color = background_color
-        self.octave_lines_color = octave_lines_color
-
-        # falling notes standrad notes
-        self.note_color = (179, 44, 49)
-        self.dark_note_color = (113, 34, 36)
-
-        # right and left hand
-        self.right_note_color = (168, 255, 145)
-        self.left_note_color = (176, 202, 229)
-        self.dark_right_note_color = (118, 208, 68)
-        self.dark_left_note_color = (124, 142, 151)
-
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-        self.note_animation = NoteAnimation(
-            bpm=bpm,
-            fps=fps,
-            ticks_per_beat=ticks_per_beat,
-            screen_height=screen_height,
-            note_speed=self.speed,
-        )
 
 
 def log_performance(func):
@@ -85,49 +34,44 @@ def log_performance(func):
 
 
 class VideoGenerator:
-    """Generates a video of notes in a midi file"""
-
-    def __init__(
-        self,
-        workdir: Path,
-        midi_file_path: Path,
-        config: VideoGeneratorConfig,
-    ):
+    def __init__(self, workdir: Path, midi_file_path: Path, config: dict):
         self.workdir = workdir
-        self.framedir = workdir / "frames"
-        self.config: VideoGeneratorConfig = config
+        self.framedir = self.workdir / "frames"
+        self._setup_workdir()
+
+        self.config: dict = config
         self.midi_file_path = midi_file_path
         self.piano = Piano(
-            screen_width=config.screen_width, screen_height=config.screen_height
+            screen_width=config["screen_width"], screen_height=config["screen_height"]
         )
-
-        # TODO: Map the note to a bool so we can set the right or left hand color
+        self.note_animation_model = NoteAnimationModel(
+            bpm=config["bpm"],
+            fps=config["fps"],
+            ticks_per_beat=MidiFile(self.midi_file_path).ticks_per_beat,
+            screen_height=config["screen_height"],
+            note_speed=config["speed"],
+        )
         self.active_notes: Dict[int, None | NoteEvent] = {
             i: None for i in self.piano.midi_key_range
         }
-        self._setup_workdir()
 
     def _setup_workdir(self):
-        if not self.workdir.exists():
-            raise FileNotFoundError(f"Workdir {str(self.workdir)} does not exist")
-        if not self.midi_file_path.exists():
-            raise FileNotFoundError(
-                f"Midi file {str(self.midi_file_path)} does not exist"
-            )
-        print(self.framedir)
+        if self.workdir.exists():
+            os.system("rm -rf workdir")
+        self.workdir.mkdir(parents=True, exist_ok=False)
         self.framedir.mkdir()
 
     def _render_frames(self):
         os.system(
-            f"ffmpeg -framerate {self.config.fps} -i {self.framedir}/%5d.jpg \
+            f"ffmpeg -framerate {self.config['fps']} -i {self.framedir}/%5d.jpg \
                 -c:v libx264 \
-                -r {self.config.fps} \
+                -r {self.config['fps']} \
                 {self.framedir}/video-no-sound.mp4"
         )
 
     def _render_audio(self):
         os.system(
-            f"fluidsynth -ni {str(config.SOUND_FONT_PATH.absolute())} \
+            f"fluidsynth -ni {self.config['soundfont_path']} \
                 {self.midi_file_path} \
                 -F {self.workdir}/audio.wav"
         )
@@ -160,9 +104,9 @@ class VideoGenerator:
         black_key_width = self.piano.black_key_width
         white_key_height = self.piano.white_key_height
         black_key_height = white_key_height - 0.4 * white_key_height
-        top = self.config.screen_height - white_key_height
+        top = self.config["screen_height"] - white_key_height
 
-        self._draw_vertical_lines(screen, self.config.screen_height)
+        self._draw_vertical_lines(screen, self.config["screen_height"])
 
         # Draw white keys
         for midi_note_id in self.piano.midi_key_range:
@@ -172,16 +116,16 @@ class VideoGenerator:
             left_pos = self.piano.get_left_key_pos(
                 note, white_key_width, black_key_width
             )
-            color = self.config.white_note_color
+            color = self.config["white_note_color"]
             note_event = self.active_notes[midi_note_id]
             if note_event:
                 if note_event.hand == "right":
-                    color = self.config.right_note_color
+                    color = self.config["right_note_color"]
                 elif note_event.hand == "left":
-                    color = self.config.left_note_color
+                    color = self.config["left_note_color"]
                 else:
                     # if hand is not set, it means it's a note that is played by both hands
-                    color = self.config.note_color
+                    color = self.config["note_color"]
             rect = pygame.Rect(left_pos, top, white_key_width, white_key_height)
             pygame.draw.rect(screen, color, rect, border_radius=3)
             pygame.draw.rect(screen, (0, 0, 0), rect, 1, border_radius=3)
@@ -191,15 +135,15 @@ class VideoGenerator:
             note: Note = self.piano.get_note(midi_note_id)
             if "#" not in note.key:
                 continue
-            color = self.config.black_note_color
+            color = self.config["black_note_color"]
             note_event = self.active_notes[midi_note_id]
             if note_event:
                 if note_event.hand == "right":
-                    color = self.config.dark_right_note_color
+                    color = self.config["dark_right_note_color"]
                 elif note_event.hand == "left":
-                    color = self.config.dark_left_note_color
+                    color = self.config["dark_left_note_color"]
                 else:
-                    color = self.config.dark_note_color
+                    color = self.config["dark_note_color"]
 
             left = self.piano.get_left_key_pos(note, white_key_width, black_key_width)
             rect = pygame.Rect(left, top, black_key_width, black_key_height)
@@ -210,7 +154,7 @@ class VideoGenerator:
 
     def _is_active(self, note_position, duration, midi_note_id):
         white_key_height_relative_bottom = (
-            self.config.screen_height - self.piano.white_key_height
+            self.config["screen_height"] - self.piano.white_key_height
         )
         if (
             note_position > white_key_height_relative_bottom
@@ -227,24 +171,24 @@ class VideoGenerator:
         if "#" in note.key:
             width = self.piano.black_key_width
             if note_event.hand == "right":
-                color = self.config.dark_right_note_color
+                color = self.config["dark_right_note_color"]
             elif note_event.hand == "left":
-                color = self.config.dark_left_note_color
+                color = self.config["dark_left_note_color"]
             else:
-                color = self.config.dark_note_color
+                color = self.config["dark_note_color"]
             note_padding = 0
         else:
             width = self.piano.white_key_width - note_padding * 2
             if note_event.hand == "right":
-                color = self.config.right_note_color
+                color = self.config["right_note_color"]
             elif note_event.hand == "left":
-                color = self.config.left_note_color
+                color = self.config["left_note_color"]
             else:
-                color = self.config.note_color
+                color = self.config["note_color"]
 
         # logging.info(f"note {note} is active")
         note_position = round(
-            self.config.note_animation.get_note_position(
+            self.note_animation_model.get_note_position(
                 note_event.start, frame_id, int(self.piano.white_key_height)
             )
         )  # the top of the note relative to the top of the screen which is 0
@@ -254,12 +198,12 @@ class VideoGenerator:
             + note_padding
         )
         # darw the note
-        duration = self.config.note_animation.get_note_length(
+        duration = self.note_animation_model.get_note_length(
             note_event.end - note_event.start
         )
         note_top = note_position - duration
         white_key_height_relative_bottom = (
-            self.config.screen_height - self.piano.white_key_height
+            self.config["screen_height"] - self.piano.white_key_height
         )
         if self._is_active(note_position, duration, note_event.note):
             self.active_notes[note_event.note] = note_event
@@ -275,13 +219,13 @@ class VideoGenerator:
     def _generate_frame(self, events: list[NoteEvent], frame_id, screen) -> None:
         # reset active notes
         self.active_notes = {note: None for note in self.piano.midi_key_range}
-        screen.fill(self.config.background_color)
+        screen.fill(self.config["background_color"])
         # select the events that are in the current frame
         active_events: list[NoteEvent] = (
-            self.config.note_animation.get_active_note_events(
+            self.note_animation_model.get_active_note_events(
                 note_events=events,
                 current_frame=frame_id,
-                screen_height=self.config.screen_height,
+                screen_height=self.config["screen_height"],
                 piano_height=int(self.piano.white_key_height),
             )
         )
@@ -296,7 +240,9 @@ class VideoGenerator:
         self._save_frame(path=self.framedir, screen=screen, frame_number=frame_id)
 
     def _generate_frame_range(self, events: list[NoteEvent], start_frame, end_frame):
-        screen = pygame.Surface((self.config.screen_width, self.config.screen_height))
+        screen = pygame.Surface(
+            (self.config["screen_width"], self.config["screen_height"])
+        )
         for frame_id in range(start_frame, end_frame):
             self._generate_frame(events, frame_id, screen)
 
@@ -304,7 +250,7 @@ class VideoGenerator:
         """Use a different approach to generate frames. This approach should be parallelized
         all noteposistions should be determined by the frame number
         """
-        total_frames = self.config.note_animation.get_total_number_of_frames(events)
+        total_frames = self.note_animation_model.get_total_number_of_frames(events)
         logging.info(f"Total frames: {total_frames}")
         # use multiprocessing to generate frames
 

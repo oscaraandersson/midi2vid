@@ -1,16 +1,9 @@
-import os
 import json
 import argparse
 from src.video_generator.midi_preprocessor import MidiPreprocessor
 from pathlib import Path
-import os
-from src.video_generator.video_generator import VideoGeneratorConfig
 from src.video_generator.video_generator import VideoGenerator
-from src.config import Config
 from utils import NoteEvent
-
-
-config = Config()
 
 
 def read_events(events_path: Path) -> list[NoteEvent]:
@@ -36,33 +29,12 @@ def read_events(events_path: Path) -> list[NoteEvent]:
     return events
 
 
-def convert_video(source_path: Path, video_path: Path, events_path: Path | None = None):
-    workdir = Path("workdir")
-    if workdir.exists():
-        os.system("rm -rf workdir")
-    workdir.mkdir(parents=True, exist_ok=False)
-
+def main(config, source_path: Path, video_path: Path, events_path: Path | None = None):
     preprocessor = MidiPreprocessor()
-
-    video_config = VideoGeneratorConfig(
-        bpm=config.BPM,
-        fps=config.FPS,
-        speed=config.SPEED,
-        ticks_per_beat=preprocessor.get_ticks_per_beat(source_path),
-        white_note_color=config.WHITE_NOTE_COLOR,
-        black_note_color=config.BLACK_NOTE_COLOR,
-        background_color=config.BACKGROUND_COLOR,
-        note_color=config.NOTE_COLOR,
-        dark_note_color=config.DARK_NOTE_COLOR,
-        octave_lines_color=config.OCTAVE_LINES_COLOR,
-        screen_height=config.SCREEN_HEIGHT,
-        screen_width=config.SCREEN_WIDTH,
-    )
-
     video_generator = VideoGenerator(
-        workdir=workdir,
+        workdir=Path("workdir"),
         midi_file_path=source_path,
-        config=video_config,
+        config=config,
     )
 
     events = []
@@ -80,6 +52,9 @@ if __name__ == "__main__":
     parser.add_argument("--source_path", type=str, required=True)
     parser.add_argument("--output_path", type=str, required=True)
     parser.add_argument("--events_path", type=str, required=False)
+    parser.add_argument(
+        "--config", type=str, required=False, default="config/default.json"
+    )
     args = parser.parse_args()
 
     source_path = Path(args.source_path)
@@ -93,4 +68,10 @@ if __name__ == "__main__":
     assert source_path.exists(), f"File {source_path} does not exist"
     assert source_path.is_file(), f"Path {source_path} is not a file"
 
-    convert_video(source_path, target_path, events_path=events_path)
+    config_path = Path(args.config)
+    assert config_path.exists(), f"File {config_path} does not exist"
+
+    with open(config_path, "r") as f:
+        config = json.load(f)
+
+    main(config, source_path, target_path, events_path=events_path)

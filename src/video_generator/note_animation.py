@@ -1,7 +1,7 @@
 from src.utils import NoteEvent
 
 
-class NoteAnimation:
+class NoteAnimationModel:
     def __init__(self, bpm, fps, ticks_per_beat, screen_height, note_speed):
         self.bpm = bpm
         self.fps = fps
