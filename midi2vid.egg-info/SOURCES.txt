@@ -4,7 +4,6 @@ midi2vid.egg-info/PKG-INFO
 midi2vid.egg-info/SOURCES.txt
 midi2vid.egg-info/dependency_links.txt
 midi2vid.egg-info/top_level.txt
-src/config.py
 src/main.py
 src/utils.py
 test/test_config.py
