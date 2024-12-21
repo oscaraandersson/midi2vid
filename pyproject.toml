@@ -13,11 +13,12 @@ dev = ["ruff", "pytest"]
 
 [tool.ruff]
 select = [
-    "E",
+    "E", # errors
     "F", # pyflakes
-    "B",
+    "B", # flake8-bugbear
     "I", # imports
     "N", # names
+    "D", # docstrings
 ]
 line-length = 80
 indent-width = 2

@@ -1,3 +1,4 @@
+"""Entrypoint to run generate a video from a midi file."""
 import argparse
 import json
 from pathlib import Path
@@ -9,8 +10,8 @@ from midi2vid.video_generator import VideoGenerator
 
 
 def read_events(events_path: Path) -> list[NoteEvent]:
-  """
-  Read events from a json file. The file should have the following format:
+  """Read events from a json file. The file should have the following format.
+
   [
       {note: int, velocity: int, start: int, end: int, hand: str},
   ]
@@ -37,6 +38,7 @@ def main(
   video_path: Path,
   events_path: Path | None = None,
 ):
+  """Entry point of the program."""
   config = Config.from_json(config_path)
   preprocessor = MidiPreprocessor()
   video_generator = VideoGenerator(
