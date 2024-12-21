@@ -9,7 +9,7 @@ from mido.midifiles.meta import (
 )
 from mido.midifiles.midifiles import MidiFile
 
-from src.utils import NoteEvent
+from midi2vid.utils import NoteEvent
 
 
 class MidiPreprocessor:

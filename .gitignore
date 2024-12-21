@@ -5,6 +5,7 @@ midi_player.egg-info/
 pyrightconfig.json
 resources/
 venv/
+.venv
 workdir/
 test/generated
 *.mp4

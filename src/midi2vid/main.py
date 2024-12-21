@@ -2,10 +2,10 @@ import argparse
 import json
 from pathlib import Path
 
-from src.video_generator.config import Config
-from src.video_generator.midi_preprocessor import MidiPreprocessor
-from src.video_generator.video_generator import VideoGenerator
-from utils import NoteEvent
+from midi2vid.config import Config
+from midi2vid.midi_preprocessor import MidiPreprocessor
+from midi2vid.utils import NoteEvent
+from midi2vid.video_generator import VideoGenerator
 
 
 def read_events(events_path: Path) -> list[NoteEvent]:

@@ -1,6 +1,6 @@
 from mido.midifiles import MidiFile
 
-from src.utils import NoteEvent
+from midi2vid.utils import NoteEvent
 
 
 class NoteAnimationModel:

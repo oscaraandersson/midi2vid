@@ -12,10 +12,10 @@ import pygame
 from mido import MidiFile
 from pygame import Surface
 
-from src.utils import NoteEvent
-from src.video_generator.config import Config
-from src.video_generator.note_animation import NoteAnimationModel
-from src.video_generator.piano import Note, Piano
+from midi2vid.config import Config
+from midi2vid.note_animation import NoteAnimationModel
+from midi2vid.piano import Note, Piano
+from midi2vid.utils import NoteEvent
 
 # Set up logging configuration
 logging.basicConfig(
