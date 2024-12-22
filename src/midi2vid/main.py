@@ -1,4 +1,5 @@
 """Entrypoint to run generate a video from a midi file."""
+
 import argparse
 import json
 from pathlib import Path

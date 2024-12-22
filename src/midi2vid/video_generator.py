@@ -1,3 +1,4 @@
+"""Generates a video of notes from a midi file."""
 from __future__ import annotations
 
 import logging
@@ -26,6 +27,12 @@ T = TypeVar("T")
 
 
 def log_performance(func: Callable[..., T]) -> Callable[..., T]:
+  """Loggs the execution time of a function or method.
+
+  Example usage:
+    @log_performance
+    def calculation():
+  """
   @wraps(func)
   def wrapper(*args: Any, **kwargs: Any) -> T:
     start_time = time.perf_counter()
@@ -39,7 +46,10 @@ def log_performance(func: Callable[..., T]) -> Callable[..., T]:
 
 
 class VideoGenerator:
+  """Generates a video from a midi file of the piano notes."""
+
   def __init__(self, workdir: Path, midi_file_path: Path, config: Config):
+    """Will raise an error if the midi_file_path does not exist."""
     self.workdir = workdir
     self.framedir = self.workdir / "frames"
     self._setup_workdir()
@@ -265,10 +275,6 @@ class VideoGenerator:
       self._generate_frame(events, frame_id, screen)
 
   def _generate_frames(self, events: list[NoteEvent]):
-    """
-    Use a different approach to generate frames. This approach should be
-    parallelized all noteposistions should be determined by the frame number
-    """
     total_frames = self.note_animation_model.get_total_number_of_frames(events)
     logging.info(f"Total frames: {total_frames}")
     n_processors = self.config.n_processors
@@ -289,6 +295,10 @@ class VideoGenerator:
     destination_filepath: Path,
     sample: bool = False,
   ):
+    """Generate a video of a midi file path.
+
+    The events could be generated with the midi_preprocessor.
+    """
     logging.info("Generating frames")
     self._generate_frames(events)
     logging.info("Rendering video")
