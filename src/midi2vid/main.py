@@ -57,8 +57,8 @@ def main(
     print(len(events))
   video_generator.generate_video(events=events, destination_filepath=video_path)
 
-
-if __name__ == "__main__":
+def commandline_main():
+  """Parse the arguments and call main."""
   parser = argparse.ArgumentParser(description="Convert midi to mp4")
   parser.add_argument("--source_path", type=str, required=True)
   parser.add_argument("--output_path", type=str, required=True)
@@ -82,3 +82,6 @@ if __name__ == "__main__":
   config_path = Path(args.config)
   assert config_path.exists(), f"File {config_path} does not exist"
   main(config_path, source_path, target_path, events_path=events_path)
+
+if __name__ == "__main__":
+  commandline_main()

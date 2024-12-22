@@ -11,6 +11,11 @@ requires-python = ">=3.10,<3.11"
 [project.optional-dependencies]
 dev = ["ruff", "pytest"]
 
+# run the project with:
+# midi2vid --source_path=file.midi --output_path=out.mp4 --config default.json
+[project.scripts]
+midi2vid = "midi2vid.main:commandline_main"
+
 [tool.ruff]
 select = [
     "E", # errors

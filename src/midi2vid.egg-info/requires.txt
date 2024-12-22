@@ -1,5 +1,6 @@
 mido==1.3.2
 pygame==2.6.1
+gdown==5.2.0
 
 [dev]
 ruff
