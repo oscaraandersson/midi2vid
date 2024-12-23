@@ -1,6 +1,5 @@
+from midiutils.types import NoteEvent
 from mido.midifiles import MidiFile
-
-from midi2vid.utils import NoteEvent
 
 
 class NoteAnimationModel:
@@ -25,9 +24,9 @@ class NoteAnimationModel:
     self.ticks_per_frame = self._calculate_ticks_per_frame()
 
   def _calculate_ticks_per_second(self) -> float:
-    """
-    Calculate how many ticks occur in one second based on BPM and ticks per
-    beat.
+    """Calculate how many ticks occur in one second.
+
+    The calculation is based on BPM and ticks per beat.
     """
     beats_per_second = self.bpm / 60  # Convert BPM to BPS(Beats Per Second)
     return beats_per_second * self.ticks_per_beat
@@ -56,8 +55,7 @@ class NoteAnimationModel:
   def get_note_position(
     self, start_tick: int, current_frame: int, piano_height: int = 185
   ):
-    """
-    Calculate the position of a note in pixels from the top of the screen 0.
+    """Calculate the position of a note in pixels from the top of the screen 0.
     The position is the bottom of the note, relative to the top of the screen.
     """
     # speed affects the number of pixels a note moves in each frame
@@ -75,9 +73,7 @@ class NoteAnimationModel:
     return note_hight_relavtive_to_bottom
 
   def _binary_search(self, note_events: list[NoteEvent], start_tick: float):
-    """
-    Find the index of the first note that has not passed the piano.
-    """
+    """Find the index of the first note that has not passed the piano."""
     left, right = 0, len(note_events) - 1
     while left <= right:
       mid = left + (right - left) // 2
@@ -94,8 +90,8 @@ class NoteAnimationModel:
     screen_height: int,
     piano_height: int,
   ):
-    """
-    Return a list of active notes based on the current frame.
+    """Return a list of active notes based on the current frame.
+
     Active notes are notes that are currently present on the frame.
     Dependent variables:
     - note_events: List of NoteEvent objects, each has a start and end tick.
@@ -135,9 +131,7 @@ class NoteAnimationModel:
     return midi_file.ticks_per_beat * (self.bpm / 60) * midi_file.length
 
   def get_note_length(self, duration: int):
-    """
-    Calculate the length of a note in pixels based on its duration in ticks.
-    """
+    """Calculate the length of a note in pixels based on its duration in ticks."""
     # Convert duration from ticks to seconds
     # Duration in seconds = (Duration in ticks) / (Ticks per second)
     duration_in_seconds = duration / self.ticks_per_second

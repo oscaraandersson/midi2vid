@@ -1,4 +1,5 @@
 """Generates a video of notes from a midi file."""
+
 from __future__ import annotations
 
 import logging
@@ -10,13 +11,13 @@ from pathlib import Path
 from typing import Any, Callable, Dict, TypeVar
 
 import pygame
+from midiutils.types import NoteEvent
 from mido import MidiFile
 from pygame import Surface
 
 from midi2vid.config import Config
 from midi2vid.note_animation import NoteAnimationModel
 from midi2vid.piano import Note, Piano
-from midi2vid.utils import NoteEvent
 
 # Set up logging configuration
 logging.basicConfig(
@@ -33,6 +34,7 @@ def log_performance(func: Callable[..., T]) -> Callable[..., T]:
     @log_performance
     def calculation():
   """
+
   @wraps(func)
   def wrapper(*args: Any, **kwargs: Any) -> T:
     start_time = time.perf_counter()

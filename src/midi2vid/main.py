@@ -4,9 +4,10 @@ import argparse
 import json
 from pathlib import Path
 
+from midiutils.midi_preprocessor import MidiPreprocessor
+from midiutils.types import NoteEvent
+
 from midi2vid.config import Config
-from midi2vid.midi_preprocessor import MidiPreprocessor
-from midi2vid.utils import NoteEvent
 from midi2vid.video_generator import VideoGenerator
 
 
@@ -57,6 +58,7 @@ def main(
     print(len(events))
   video_generator.generate_video(events=events, destination_filepath=video_path)
 
+
 def commandline_main():
   """Parse the arguments and call main."""
   parser = argparse.ArgumentParser(description="Convert midi to mp4")
@@ -82,6 +84,7 @@ def commandline_main():
   config_path = Path(args.config)
   assert config_path.exists(), f"File {config_path} does not exist"
   main(config_path, source_path, target_path, events_path=events_path)
+
 
 if __name__ == "__main__":
   commandline_main()

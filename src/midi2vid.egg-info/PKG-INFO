@@ -5,6 +5,7 @@ Requires-Python: <3.11,>=3.10
 Requires-Dist: mido==1.3.2
 Requires-Dist: pygame==2.6.1
 Requires-Dist: gdown==5.2.0
+Requires-Dist: midiutils@ git+ssh://git@github.com/pianoviz/midiutils.git
 Provides-Extra: dev
 Requires-Dist: ruff; extra == "dev"
 Requires-Dist: pytest; extra == "dev"
