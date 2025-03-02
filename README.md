@@ -28,6 +28,35 @@ midi2vid -i <input_midi_file> -o <output_video_file>
 ```bash
 -i, --input: Input midi file
 -o, --output: Output video file
+--config: Path to the configuration file (default: config/default.json)
+```
+
+## Configuration
+
+The configuration file is a JSON file that specifies various parameters for the
+video generation. Here is an example configuration file:
+
+```json
+{
+  "soundfont_path": "data/soundfont.sf2",
+  "max_note_length": 50,
+  "n_processors": 4,
+  "screen_width": 1920,
+  "screen_height": 1080,
+  "bpm": 120,
+  "fps": 30,
+  "speed": 200,
+  "white_note_color": [255, 255, 255],
+  "black_note_color": [49, 49, 49],
+  "background_color": [43, 43, 43],
+  "octave_lines_color": [92, 92, 92],
+  "note_color": [179, 44, 49],
+  "dark_note_color": [113, 34, 36],
+  "right_note_color": [168, 255, 145],
+  "left_note_color": [176, 202, 229],
+  "dark_right_note_color": [118, 208, 68],
+  "dark_left_note_color": [124, 142, 151]
+}
 ```
 
 ## Example
