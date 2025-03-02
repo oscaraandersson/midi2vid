@@ -10,6 +10,7 @@ dependencies = [
     "pygame==2.6.1",
     "gdown==5.2.0",
     "midiutils @ git+ssh://git@github.com/pianoviz/midiutils.git",
+    "midi2hands @ file:///Users/oscar/pro/midi2hands",
 ]
 requires-python = ">=3.10,<3.11"
 

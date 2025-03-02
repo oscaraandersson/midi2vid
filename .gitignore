@@ -9,3 +9,4 @@ venv/
 workdir/
 test/generated
 *.mp4
+*.egg-info

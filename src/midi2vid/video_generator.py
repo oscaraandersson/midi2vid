@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, TypeVar
 
 import pygame
 from midiutils.types import NoteEvent
-from mido import MidiFile
+from mido import MidiFile  # type: ignore
 from pygame import Surface
 
 from midi2vid.config import Config
