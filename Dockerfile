@@ -1,18 +1,21 @@
 FROM python:3.11
 
-# install ffmpeg and fluidsynth
+# Install ffmpeg and fluidsynth
 RUN apt-get update && apt-get install -y \
     ffmpeg \
-    fluidsynth
+    fluidsynth \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
+COPY pyproject.toml .
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -e .
 
 COPY . .
 
 RUN pip install -e .
 
-CMD ["python3", "src/converter.py"]
+# Set the default command to use the midi2vid script with input and output arguments
+ENTRYPOINT ["midi2vid"]
