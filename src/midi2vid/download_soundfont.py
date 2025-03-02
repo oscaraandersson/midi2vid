@@ -1,24 +1,9 @@
-from pathlib import Path
-
 from gdown import download  # type: ignore
 
-
-def find_project_root(marker: str = "pyproject.toml"):
-  """
-  Traverse upward from the current file's location to find the project root
-  containing the specified marker file (e.g., pyproject.toml).
-  """
-  current_path = Path(__file__).resolve().parent
-  while current_path != current_path.parent:
-    if (current_path / marker).exists():
-      return current_path
-    current_path = current_path.parent
-  raise FileNotFoundError(
-    f"Project root not found. '{marker}' file is missing."
-  )
+from midi2vid.utils import find_project_root
 
 
-def download_soundfont():
+def download_soundfont() -> None:
   # Here I found multiple soundfonts
   # https://sites.google.com/site/soundfonts4u/
   url = "https://drive.google.com/uc?id=1nvTy62-wHGnZ6CKYuPNAiGlKLtWg9Ir9"
@@ -37,7 +22,7 @@ def download_soundfont():
       print("Download complete.")
     except Exception as e:
       print(f"Failed to download the file: {e}")
-      raise
+      raise e
   else:
     print(f"{target_file} already exists. Skipping download.")
 

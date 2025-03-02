@@ -9,6 +9,7 @@ from midiutils.midi_preprocessor import MidiPreprocessor
 
 from midi2vid.config import Config
 from midi2vid.video_generator import VideoGenerator
+from midi2vid.download_soundfont import download_soundfont
 
 
 def main(
@@ -18,6 +19,10 @@ def main(
 ):
   """Entry point of the program."""
   config = Config.from_json(config_path)
+
+  # check if the sound font is downloaded
+  download_soundfont()
+
   preprocessor = MidiPreprocessor()
   video_generator = VideoGenerator(
     workdir=Path("workdir"), midi_file_path=source_path, config=config
