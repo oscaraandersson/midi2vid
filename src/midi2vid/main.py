@@ -27,7 +27,7 @@ def main(
   video_generator = VideoGenerator(
     workdir=Path("workdir"), midi_file_path=source_path, config=config
   )
-  estimate_hands = False
+  estimate_hands = True
 
   events = []
   events = preprocessor.get_midi_events(
@@ -36,12 +36,11 @@ def main(
   if estimate_hands:
     model = ONNXModel()
     handformer = GenerativeHandFormer(model=model)
-    events, _, _ = handformer.inference(
+    _, _, y_pred = handformer.inference(
       events=events, window_size=model.window_size, device="cpu"
     )
-    for event in events:
-      print(event.hand)
-  print(len(events))
+    for i, e in enumerate(events):
+      e.hand = "left" if y_pred[i] == 0 else "right"
   video_generator.generate_video(events=events, destination_filepath=video_path)
 
 

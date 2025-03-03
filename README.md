@@ -63,9 +63,14 @@ video generation. Here is an example configuration file:
   "right_note_color": [168, 255, 145],
   "left_note_color": [176, 202, 229],
   "dark_right_note_color": [118, 208, 68],
-  "dark_left_note_color": [124, 142, 151]
+  "dark_left_note_color": [124, 142, 151],
+  "estimate_hands": false
 }
 ```
+
+The `estimate_hands` parameter is experimental and is used to estimate the hand
+positions based on the notes played. It is currently under development and may
+not work as expected.
 
 ## Example
 ```bash

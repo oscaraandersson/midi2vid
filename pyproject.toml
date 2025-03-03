@@ -29,7 +29,7 @@ select = [
     "B", # flake8-bugbear
     "I", # imports
     "N", # names
-    "D", # docstrings
+    # "D", # docstrings
 ]
 line-length = 80
 indent-width = 2
