@@ -14,6 +14,12 @@ Install from github using pip:
 pip install git+https://github.com/pianoviz/midi2vid.git
 ```
 
+Build with docker:
+```bash
+docker build -t midi2vid-base .
+docker run --rm -v $(pwd):/app midi2vid-base -i data/example.mid -o your_output.mp4
+```
+
 Build from source:
 ```bash
 git clone https://github.com/pianoviz/midi2vid.git

@@ -8,8 +8,8 @@ from midi2hands.models.onnex.onnex_model import ONNXModel
 from midiutils.midi_preprocessor import MidiPreprocessor
 
 from midi2vid.config import Config
-from midi2vid.video_generator import VideoGenerator
 from midi2vid.download_soundfont import download_soundfont
+from midi2vid.video_generator import VideoGenerator
 
 
 def main(
