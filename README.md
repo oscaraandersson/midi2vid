@@ -1,10 +1,10 @@
-# MIDI2VID
+# Midi2Vid - Simple and Fast Midi to Video Converter
 
 Midi to video converter. This program renders the notes of a midi file to a
-video. The renderer is built on top of the [pygame](https://www.pygame.org/)
-library and uses multiple processes to generate the frames of the video. It then
-uses ffmpeg to convert the frames to a video. It also uses the fluidsynth
-library to render the midi file to a wav file.
+video. The renderer is built on top of the pygame library and uses multiple
+processes to generate the frames of the video. It then uses ffmpeg to convert
+the frames to a video. It also uses the fluidsynth library to render the midi
+file to a wav file.
 
 ![Example](/assets/midi2vid.jpg)
 
@@ -73,14 +73,16 @@ positions based on the notes played. It is currently under development and may
 not work as expected.
 
 ## Example
+There is an example midi file in the `data` directory. You can run the following
+command to generate a video from the example midi file:
 ```bash
-midi2vid -i example.mid -o example.mp4
+midi2vid -i data/example.mid -o example.mp4
 ```
 
 ## Dependencies
-- [pygame](https://www.pygame.org/)
-- [ffmpeg](https://ffmpeg.org/)
-- [fluidsynth]()
+- pygame
+- ffmpeg
+- fluidsynth
 
 ## Contributing
 
