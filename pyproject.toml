@@ -22,6 +22,9 @@ dev = ["ruff", "pytest"]
 
 [tool.setuptools_scm]
 
+[project.urls]
+"Github" = "https://github.com/oscaraandersson/midi2vid"
+
 # run the project with:
 # midi2vid --source_path=file.midi --output_path=out.mp4 --config default.json
 [project.scripts]

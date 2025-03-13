@@ -6,7 +6,7 @@ processes to generate the frames of the video. It then uses ffmpeg to convert
 the frames to a video. It also uses the fluidsynth library to render the midi
 file to a wav file.
 
-![Example](/assets/midi2vid.jpg)
+![Example](https://raw.githubusercontent.com/oscaraandersson/midi2vid/main/assets/midi2vid.jpg)
 
 ## Installation
 Install from github using pip:
