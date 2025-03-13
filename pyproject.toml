@@ -4,17 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "midi2vid"
-version = "0.0.1"
+dynamic = ["version"]
 description = "Simple and fast library to convert midi files to video"
 readme = "README.md"
 authors = [{ name = "Oscar Andersson", email = "oscar.966484@gmail.com" }]
-license = "MIT"
+license = {file = "LICENSE"}
 dependencies = [
     "mido==1.3.2",
     "pygame==2.6.1",
     "gdown==5.2.0",
-    "midiutils @ git+https://github.com/pianoviz/midiutils.git",
-    "midi2hands @ git+https://github.com/pianoviz/midi2hands.git",
+    "midiutils-python",
+    "midi2hands==0.0.2",
 ]
 
 [project.optional-dependencies]
