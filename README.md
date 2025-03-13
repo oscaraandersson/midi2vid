@@ -11,13 +11,13 @@ file to a wav file.
 ## Installation
 Install from github using pip:
 ```bash
-pip install git+https://github.com/pianoviz/midi2vid.git
+pip install midi2vid
 ```
 
 Build with docker:
 ```bash
 docker build -t midi2vid-base .
-docker run --rm -v $(pwd):/app midi2vid-base -i data/example.mid -o your_output.mp4
+docker run --rm -v $(pwd):/app midi2vid-base -i midi2vid/data/example.mid -o your_output.mp4
 ```
 
 Build from source:
@@ -32,11 +32,20 @@ pip install -e .
 midi2vid -i <input_midi_file> -o <output_video_file>
 ```
 
-## Options
+**Options**
+
 ```bash
 -i, --input: Input midi file
 -o, --output: Output video file
---config: Path to the configuration file (default: config/default.json)
+--config: Path to the configuration file (default: default.json)
+```
+
+**Example**
+
+There is an example midi file in the `data` directory. You can run the following
+command to generate a video from the example midi file:
+```bash
+midi2vid -i midi2vid/data/example.mid -o example.mp4
 ```
 
 ## Configuration
@@ -72,12 +81,6 @@ The `estimate_hands` parameter is experimental and is used to estimate the hand
 positions based on the notes played. It is currently under development and may
 not work as expected.
 
-## Example
-There is an example midi file in the `data` directory. You can run the following
-command to generate a video from the example midi file:
-```bash
-midi2vid -i data/example.mid -o example.mp4
-```
 
 ## Dependencies
 - pygame
