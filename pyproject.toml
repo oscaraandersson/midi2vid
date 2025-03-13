@@ -20,6 +20,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["ruff", "pytest"]
 
+[tool.setuptools_scm]
+
 # run the project with:
 # midi2vid --source_path=file.midi --output_path=out.mp4 --config default.json
 [project.scripts]
