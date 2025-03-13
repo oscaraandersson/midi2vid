@@ -9,11 +9,10 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY pyproject.toml .
+COPY . .
 
 RUN pip install --no-cache-dir -e .
 
-COPY . .
 
 RUN pip install -e .
 
