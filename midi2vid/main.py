@@ -3,6 +3,7 @@
 import argparse
 import os
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from midi2hands.models.generative import GenerativeHandFormer
 from midi2hands.models.onnex.onnex_model import ONNXModel
@@ -24,24 +25,27 @@ def main(
   # check if the sound font is downloaded
   download_soundfont()
 
-  preprocessor = MidiPreprocessor()
-  video_generator = VideoGenerator(
-    workdir=Path("workdir"), midi_file_path=source_path, config=config
-  )
-
-  events = []
-  events = preprocessor.get_midi_events(
-    source_path, max_note_length=int(config.max_note_length)
-  )
-  if config.estimate_hands:
-    model = ONNXModel()
-    handformer = GenerativeHandFormer(model=model)
-    _, _, y_pred = handformer.inference(
-      events=events, window_size=model.window_size, device="cpu"
+  with TemporaryDirectory() as workdir:
+    preprocessor = MidiPreprocessor()
+    video_generator = VideoGenerator(
+      workdir=Path(workdir), midi_file_path=source_path, config=config
     )
-    for i, e in enumerate(events):
-      e.hand = "left" if y_pred[i] == 0 else "right"
-  video_generator.generate_video(events=events, destination_filepath=video_path)
+
+    events = []
+    events = preprocessor.get_midi_events(
+      source_path, max_note_length=int(config.max_note_length)
+    )
+    if config.estimate_hands:
+      model = ONNXModel()
+      handformer = GenerativeHandFormer(model=model)
+      _, _, y_pred = handformer.inference(
+        events=events, window_size=model.window_size, device="cpu"
+      )
+      for i, e in enumerate(events):
+        e.hand = "left" if y_pred[i] == 0 else "right"
+    video_generator.generate_video(
+      events=events, destination_filepath=video_path
+    )
 
 
 def commandline_main():

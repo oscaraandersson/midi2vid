@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import logging
 import os
+import shutil
+import subprocess
 import time
 from functools import wraps
 from multiprocessing import Pool
 from pathlib import Path
 from typing import Any, Callable, Dict, TypeVar
 
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
 from midiutils.types import NoteEvent
 from mido import MidiFile  # type: ignore
@@ -47,6 +50,21 @@ def log_performance(func: Callable[..., T]) -> Callable[..., T]:
   return wrapper
 
 
+def _run_command(command: str, debug: bool = False):
+  """Helper function to run shell commands with optional debugging."""
+  if debug:
+    print(f"Running command: {command}")
+
+  result = subprocess.run(command, shell=True, capture_output=True, text=True)
+
+  if result.returncode != 0:
+    print(f"Error executing command:\n{result.stderr}")
+    raise RuntimeError(f"Command failed: {command}")
+
+  if debug:
+    print(f"Output:\n{result.stdout}")
+
+
 class VideoGenerator:
   """Generates a video from a midi file of the piano notes."""
 
@@ -54,7 +72,7 @@ class VideoGenerator:
     """Will raise an error if the midi_file_path does not exist."""
     self.workdir = workdir
     self.framedir = self.workdir / "frames"
-    self._setup_workdir()
+    self.framedir.mkdir()
 
     self.config = config
     self.midi_file_path = midi_file_path
@@ -75,34 +93,29 @@ class VideoGenerator:
       os.path.dirname(__file__), "data/soundfont.sf2"
     )
 
-  def _setup_workdir(self):
-    if self.workdir.exists():
-      os.system("rm -rf workdir")
-    self.workdir.mkdir(parents=True, exist_ok=False)
-    self.framedir.mkdir()
-
   def _render_frames(self):
-    os.system(
-      f"ffmpeg -framerate {self.config.fps} -i {self.framedir}/%5d.jpg \
-                -c:v libx264 \
-                -r {self.config.fps} \
-                {self.framedir}/video-no-sound.mp4"
+    command = (
+      f"ffmpeg -framerate {self.config.fps} -i {self.framedir}/%5d.jpg "
+      f"-c:v libx264 -r {self.config.fps} "
+      f"{self.framedir}/video-no-sound.mp4"
     )
+    _run_command(command, self.config.debug)
 
   def _render_audio(self):
-    os.system(
-      f"fluidsynth -ni {self.soundfont_path} \
-                {self.midi_file_path} \
-                -F {self.workdir}/audio.wav"
+    command = (
+      f"fluidsynth -ni {self.soundfont_path} {self.midi_file_path} "
+      f"-F {self.workdir}/audio.wav"
     )
+    _run_command(command, self.config.debug)
 
   def _merge_audio_and_video(self, destination_filepath: Path):
-    os.system(
-      f"ffmpeg -y -i {self.framedir}/video-no-sound.mp4 \
-                -i {self.workdir}/audio.wav -c:v copy \
-                -c:a aac -strict experimental \
-                -b:a 192k -f mp4 {destination_filepath.absolute()}"
+    command = (
+      f"ffmpeg -y -i {self.framedir}/video-no-sound.mp4 "
+      f"-i {self.workdir}/audio.wav -c:v copy "
+      f"-c:a aac -strict experimental -b:a 192k -f mp4 "
+      f"{destination_filepath.absolute()}"
     )
+    _run_command(command, self.config.debug)
 
   def _draw_vertical_lines(self, screen: Surface, screen_height: int):
     left_positions: list[int] = []
@@ -298,7 +311,6 @@ class VideoGenerator:
     self,
     events: list[NoteEvent],
     destination_filepath: Path,
-    sample: bool = False,
   ):
     """Generate a video of a midi file path.
 
@@ -312,3 +324,6 @@ class VideoGenerator:
     self._render_audio()
     logging.info("Merging audio and video")
     self._merge_audio_and_video(destination_filepath)
+
+    if self.config.debug:
+      shutil.copytree(self.workdir, "workdir", dirs_exist_ok=True)

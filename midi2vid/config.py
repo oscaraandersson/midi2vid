@@ -24,6 +24,7 @@ class Config:
   dark_right_note_color: List[int]
   dark_left_note_color: List[int]
   estimate_hands: bool
+  debug: bool
 
   @staticmethod
   def from_json(json_path: Path) -> "Config":
