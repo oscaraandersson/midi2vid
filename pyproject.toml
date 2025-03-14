@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["midi2vid"]
 
+[tool.setuptools.package-data]
+mypkg = ["*.json"]
+
 [project]
 name = "midi2vid"
 dynamic = ["version"]
