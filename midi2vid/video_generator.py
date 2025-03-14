@@ -71,6 +71,9 @@ class VideoGenerator:
     self.active_notes: Dict[int, None | NoteEvent] = {
       i: None for i in self.piano.midi_key_range
     }
+    self.soundfont_path = os.path.join(
+      os.path.dirname(__file__), "data/soundfont.sf2"
+    )
 
   def _setup_workdir(self):
     if self.workdir.exists():
@@ -88,7 +91,7 @@ class VideoGenerator:
 
   def _render_audio(self):
     os.system(
-      f"fluidsynth -ni {self.config.soundfont_path} \
+      f"fluidsynth -ni {self.soundfont_path} \
                 {self.midi_file_path} \
                 -F {self.workdir}/audio.wav"
     )

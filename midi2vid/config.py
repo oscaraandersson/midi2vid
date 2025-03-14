@@ -6,7 +6,6 @@ from typing import List
 
 @dataclass
 class Config:
-  soundfont_path: str
   max_note_length: int
   n_processors: int
   screen_width: int

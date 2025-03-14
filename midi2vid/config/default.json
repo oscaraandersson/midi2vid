@@ -1,5 +1,4 @@
 {
-  "soundfont_path": "data/soundfont.sf2",
   "max_note_length": 80,
   "n_processors": 4,
   "screen_width": 1920,
