@@ -16,6 +16,6 @@
   "left_note_color": [176, 202, 229],
   "dark_right_note_color": [118, 208, 68],
   "dark_left_note_color": [124, 142, 151],
-  "estimate_hands": false,
+  "estimate_hands": true,
   "debug": false
 }

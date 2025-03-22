@@ -93,6 +93,7 @@ class VideoGenerator:
       os.path.dirname(__file__), "data/soundfont.sf2"
     )
 
+  @log_performance
   def _render_frames(self):
     command = (
       f"ffmpeg -framerate {self.config.fps} -i {self.framedir}/%5d.jpg "
@@ -101,6 +102,7 @@ class VideoGenerator:
     )
     _run_command(command, self.config.debug)
 
+  @log_performance
   def _render_audio(self):
     command = (
       f"fluidsynth -ni {self.soundfont_path} {self.midi_file_path} "
@@ -108,11 +110,14 @@ class VideoGenerator:
     )
     _run_command(command, self.config.debug)
 
+  @log_performance
   def _merge_audio_and_video(self, destination_filepath: Path):
     command = (
       f"ffmpeg -y -i {self.framedir}/video-no-sound.mp4 "
       f"-i {self.workdir}/audio.wav -c:v copy "
-      f"-c:a aac -strict experimental -b:a 192k -f mp4 "
+      # f"-c:a aac -strict experimental -b:a 192k -f mp4 "
+      # aac coded is not supported in vscode
+      f"-c:a mp3 -b:a 192k -f mp4 "
       f"{destination_filepath.absolute()}"
     )
     _run_command(command, self.config.debug)
@@ -292,6 +297,7 @@ class VideoGenerator:
     for frame_id in range(start_frame, end_frame):
       self._generate_frame(events, frame_id, screen)
 
+  @log_performance
   def _generate_frames(self, events: list[NoteEvent]):
     total_frames = self.note_animation_model.get_total_number_of_frames(events)
     logging.info(f"Total frames: {total_frames}")
