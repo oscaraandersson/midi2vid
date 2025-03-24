@@ -130,7 +130,6 @@ class NoteAnimationModel:
     return midi_file.ticks_per_beat * (self.bpm / 60) * midi_file.length
 
   def get_note_length(self, duration: int):
-    """Calculate the length of a note in pixels based on its duration in ticks."""
     # Convert duration from ticks to seconds
     # Duration in seconds = (Duration in ticks) / (Ticks per second)
     duration_in_seconds = duration / self.ticks_per_second

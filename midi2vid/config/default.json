@@ -5,7 +5,7 @@
   "screen_height": 1080,
   "bpm": 120,
   "fps": 30,
-  "speed": 200,
+  "speed": 300,
   "white_note_color": [255, 255, 255],
   "black_note_color": [49, 49, 49],
   "background_color": [43, 43, 43],

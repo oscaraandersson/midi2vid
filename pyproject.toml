@@ -48,8 +48,6 @@ select = [
 line-length = 80
 indent-width = 2
 
-[tool.pyright]
-venvPath = "."
-venv = ".venv"
-typeCheckingMode = "strict"
-reportMissingTypeStubs = false
+[tool.mypy]
+strict = true
+ignore_missing_imports = true

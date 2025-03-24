@@ -11,3 +11,5 @@ test/generated
 *.mp4
 *.egg-info
 dist
+notebooks
+he_is_a_pirate.mid

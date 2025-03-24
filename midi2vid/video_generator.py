@@ -65,6 +65,16 @@ def _run_command(command: str, debug: bool = False):
     print(f"Output:\n{result.stdout}")
 
 
+def get_tempo(mid: MidiFile):
+  """returns the tempo in beats per minute"""
+  tempo = 500000
+  for _ in mid.tracks:
+    for msg in mid:
+      if msg.type == "set_tempo":
+        tempo = msg.tempo
+  return 60000000 / tempo
+
+
 class VideoGenerator:
   """Generates a video from a midi file of the piano notes."""
 
@@ -79,10 +89,11 @@ class VideoGenerator:
     self.piano = Piano(
       screen_width=config.screen_width, screen_height=config.screen_height
     )
+    midi_file = MidiFile(self.midi_file_path)
     self.note_animation_model = NoteAnimationModel(
-      bpm=config.bpm,
+      bpm=get_tempo(midi_file),
       fps=config.fps,
-      ticks_per_beat=MidiFile(self.midi_file_path).ticks_per_beat,
+      ticks_per_beat=midi_file.ticks_per_beat,
       screen_height=config.screen_height,
       note_speed=config.speed,
     )
