@@ -6,7 +6,7 @@ processes to generate the frames of the video. It then uses ffmpeg to convert
 the frames to a video. It also uses the fluidsynth library to render the midi
 file to a wav file.
 
-![Example](https://raw.githubusercontent.com/oscaraandersson/midi2vid/main/assets/midi2vid.jpg)
+![Example](https://raw.githubusercontent.com/oscaraandersson/midi2vid/main/assets/midi2vid.png)
 
 ## Installation
 Install from github using pip:
@@ -29,15 +29,7 @@ pip install -e .
 
 ## Usage
 ```bash
-midi2vid -i <input_midi_file> -o <output_video_file>
-```
-
-**Options**
-
-```bash
--i, --input: Input midi file
--o, --output: Output video file
---config: Path to the configuration file (default: default.json)
+midi2vid <input_midi_file> <output_video_file>
 ```
 
 **Example**
@@ -45,41 +37,39 @@ midi2vid -i <input_midi_file> -o <output_video_file>
 There is an example midi file in the `data` directory. You can run the following
 command to generate a video from the example midi file:
 ```bash
-midi2vid -i midi2vid/data/example.mid -o example.mp4
+midi2vid -i midi2vid/data/example.mid out.mp4 --fps 60 --width 1920 --height 1080
 ```
 
 ## Configuration
 
-The configuration file is a JSON file that specifies various parameters for the
-video generation. Here is an example configuration file:
+| Argument                 | Description                                         | Default Value          |
+|--------------------------|-----------------------------------------------------|------------------------|
+| **Positional Arguments** |                                                     |                        |
+| `input`                  | Input MIDI file path                                | N/A                    |
+| `output`                 | Output video file path, optional                    | N/A                    |
+| **Optional Arguments**   |                                                     |                        |
+| `-i, --input`            | Input MIDI file path (overrides positional)         | N/A                    |
+| `-o, --output`           | Output video file path (overrides positional)       | N/A                    |
+| `--max-note-length`      | Maximum length of notes                             | `80`                   |
+| `--n-processors`         | Number of processors to use                         | `4`                    |
+| `--screen-width`         | Screen width in pixels                              | `1920`                 |
+| `--screen-height`        | Screen height in pixels                             | `1080`                 |
+| `--fps`                  | Frames per second                                   | `30`                   |
+| `--speed`                | Note falling speed                                  | `300`                  |
+| `--estimate-hands`       | Enable hand estimation                              | `True`                 |
+| `--debug`                | Enable debug mode                                   | `False`                |
+| **Colors**               |                                                     |                        |
+| `--white-note-color`     | White note color as RGB                             | `255,255,255`          |
+| `--black-note-color`     | Black note color as RGB                             | `49,49,49`             |
+| `--background-color`     | Background color as RGB                             | `43,43,43`             |
+| `--octave-lines-color`   | Octave lines color as RGB                           | `92,92,92`             |
+| `--note-color`           | Note color as RGB                                   | `179,44,49`            |
+| `--dark-note-color`      | Dark note color as RGB                              | `113,34,36`            |
+| `--right-note-color`     | Right hand note color as RGB                        | `168,255,145`          |
+| `--left-note-color`      | Left hand note color as RGB                         | `176,202,229`          |
+| `--dark-right-note-color`| Dark right hand note color as RGB                   | `118,208,68`           |
+| `--dark-left-note-color` | Dark left hand note color as RGB                    | `124,142,151`          |
 
-```json
-{
-  "soundfont_path": "data/soundfont.sf2",
-  "max_note_length": 50,
-  "n_processors": 4,
-  "screen_width": 1920,
-  "screen_height": 1080,
-  "bpm": 120,
-  "fps": 30,
-  "speed": 200,
-  "white_note_color": [255, 255, 255],
-  "black_note_color": [49, 49, 49],
-  "background_color": [43, 43, 43],
-  "octave_lines_color": [92, 92, 92],
-  "note_color": [179, 44, 49],
-  "dark_note_color": [113, 34, 36],
-  "right_note_color": [168, 255, 145],
-  "left_note_color": [176, 202, 229],
-  "dark_right_note_color": [118, 208, 68],
-  "dark_left_note_color": [124, 142, 151],
-  "estimate_hands": false
-}
-```
-
-The `estimate_hands` parameter is experimental and is used to estimate the hand
-positions based on the notes played. It is currently under development and may
-not work as expected.
 
 
 ## Dependencies

@@ -45,7 +45,7 @@ select = [
     "N", # names
     # "D", # docstrings
 ]
-line-length = 80
+line-length = 150
 indent-width = 2
 
 [tool.mypy]
